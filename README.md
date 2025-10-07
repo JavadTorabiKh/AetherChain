@@ -165,8 +165,8 @@ curl -X POST http://localhost:8080/transactions/new \
 
 ### Installation
 ```bash
-git clone https://github.com/your-username/aetherchain.git
-cd aetherchain
+git clone https://github.com/JavadTorabiKh/AetherChain.git
+cd AetherChain
 go mod tidy
 go run main.go
 ```
@@ -184,4 +184,4 @@ We build systems where sovereignty is the default."*
 
 ---
 
-AetherChain: Where digital intentions become immutable truth. 🌌
+#### AetherChain: Where digital intentions become immutable truth. 🌌
