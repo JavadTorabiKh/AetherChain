@@ -100,6 +100,40 @@ func (bc *Blockchain) ProofOfWork(lastProof int64) int64 {
 ```
 ---
 
+## 🗂️ Project Structure
+```text
+Aetherchain/
+├── main.go
+├── go.mod
+├── README.md
+├── blockchain/
+│   ├── blockchain.go
+│   ├── block.go
+│   ├── transaction.go
+│   └── proof_of_work.go
+├── network/
+│   ├── node.go
+│   ├── peer_discovery.go
+│   └── message_handler.go
+├── api/
+│   ├── server.go
+│   ├── routes.go
+│   └── middleware.go
+├── consensus/
+│   ├── consensus.go
+│   └── validator.go
+├── crypto/
+│   ├── keys.go
+│   └── signatures.go
+├── storage/
+│   ├── database.go
+│   └── state_manager.go
+└── config/
+    └── config.go
+```
+
+---
+
 ## 🌟 Unique Value Propositions
 ### 1. Philosophical Purity
 AetherChain is a statement that code can create equitable systems.
