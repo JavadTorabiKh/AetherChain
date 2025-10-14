@@ -1,4 +1,4 @@
-module github.com/JavadTorabiKh/AetherChain.git
+module github.com/javadtorabikh/Aetherchain
 
 go 1.22
 
