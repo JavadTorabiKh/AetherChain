@@ -1,6 +1,6 @@
-module github.com/your-username/aetherchain
+module github.com/JavadTorabiKh/AetherChain.git
 
-go 1.21
+go 1.22
 
 require (
     github.com/gin-gonic/gin v1.9.1
