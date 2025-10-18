@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
-	"javadtorabikh/aetherchain/config"
-	"javadtorabikh/aetherchain/blockchain"
-	"javadtorabikh/aetherchain/network"
+	"javadtorabikh/Aetherchain/blockchain"
+	"javadtorabikh/Aetherchain/config"
+	"javadtorabikh/Aetherchain/network"
 
 	"github.com/gin-gonic/gin"
 )
