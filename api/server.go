@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"Aetherchain/blockchain"
-	"Aetherchain/config"
-	"Aetherchain/network"
+	"aetherchain/blockchain"
+	"aetherchain/config"
+	"aetherchain/network"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,51 +36,13 @@ func NewServer(cfg *config.Config, bc *blockchain.Blockchain, node *network.Node
 
 // Start begins the API server
 func (s *Server) Start() error {
-	address := fmt.Sprintf("%s:%d", s.config.APIHost, s.config.APIPort)
-	fmt.Printf("🌐 API server starting on %s\n", address)
-	
-	return s.router.Run(address)
-}
-
-// setupRoutes configures all API routes
-func (s *Server) setupRoutes() {
-	// API documentation
-	s.router.GET("/", s.getDocumentation)
-	s.router.GET("/docs", s.getDocumentation)
-
-	// Blockchain endpoints
-	blockchainGroup := s.router.Group("/api/v1/blockchain")
-	{
-		blockchainGroup.GET("/info", s.getBlockchainInfo)
-		blockchainGroup.GET("/blocks", s.getBlocks)
-		blockchainGroup.GET("/blocks/:height", s.getBlockByHeight)
-		blockchainGroup.GET("/blocks/hash/:hash", s.getBlockByHash)
-		blockchainGroup.GET("/transactions/:hash", s.getTransaction)
-		blockchainGroup.POST("/transactions", s.createTransaction)
-		blockchainGroup.GET("/balance/:address", s.getBalance)
-	}
-
-	// Mining endpoints
-	miningGroup := s.router.Group("/api/v1/mining")
-	{
-		miningGroup.GET("/mine", s.mineBlock)
-		miningGroup.GET("/status", s.getMiningStatus)
-	}
-
-	// Network endpoints
-	networkGroup := s.router.Group("/api/v1/network")
-	{
-		networkGroup.GET("/info", s.getNetworkInfo)
-		networkGroup.GET("/peers", s.getPeers)
-		networkGroup.POST("/peers", s.addPeer)
-	}
-
-	// Node endpoints
-	nodeGroup := s.router.Group("/api/v1/node")
-	{
-		nodeGroup.GET("/status", s.getNodeStatus)
-		nodeGroup.GET("/version", s.getVersion)
-	}
+    address := fmt.Sprintf("%s:%d", s.config.APIHost, s.config.APIPort)
+    fmt.Printf("🌐 API server starting on %s\n", address)
+    
+    // فقط یکبار routes رو setup کن
+    // s.setupRoutes() // این خط رو کامنت کن یا حذف کن
+    
+    return s.router.Run(address)
 }
 
 // getDocumentation returns API documentation
@@ -303,28 +265,34 @@ func (s *Server) getPeers(c *gin.Context) {
 }
 
 // addPeer adds a new peer
+// در api/routes.go - تابع addPeer:
 func (s *Server) addPeer(c *gin.Context) {
-	var peerRequest struct {
-		Address string `json:"address" binding:"required"`
-	}
+    var peerRequest struct {
+        Address string `json:"address" binding:"required"`
+    }
 
-	if err := c.ShouldBindJSON(&peerRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
-	}
+    if err := c.ShouldBindJSON(&peerRequest); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{
+            "success": false,
+            "error":   err.Error(),
+        })
+        return
+    }
 
-	go s.node.connectToNode(peerRequest.Address)
+    // استفاده از متد public یا ایجاد متد public
+    // اگر connectToNode unexported هست، این رو تغییر بده:
+    go func() {
+        // ایجاد یک متد public در network/node.go
+        s.node.ConnectToNode(peerRequest.Address)
+    }()
 
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"data": gin.H{
-			"message": "Connecting to peer",
-			"address": peerRequest.Address,
-		},
-	})
+    c.JSON(http.StatusOK, gin.H{
+        "success": true,
+        "data": gin.H{
+            "message": "Connecting to peer",
+            "address": peerRequest.Address,
+        },
+    })
 }
 
 // getNodeStatus returns node status

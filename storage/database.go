@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"Aetherchain/blockchain"
+	"aetherchain/blockchain"
 )
 
 // Database handles persistent storage for the blockchain
@@ -252,4 +252,11 @@ func (db *Database) GetDatabaseInfo() map[string]interface{} {
 		return nil
 	})
 
-	return map
+	return map[string]interface{}{
+		"data_directory": db.dataDir,
+		"total_size_mb":  float64(totalSize) / (1024 * 1024),
+		"block_count":    len(db.blockchain.Chain),
+		"tx_pool_size":   len(db.blockchain.TransactionPool),
+		"account_count":  len(db.blockchain.Accounts),
+	}
+}

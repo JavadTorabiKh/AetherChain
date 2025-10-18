@@ -1,6 +1,10 @@
 package consensus
 
-import "Aetherchain/blockchain"
+import (
+
+	"time"
+)
+import "aetherchain/blockchain"
 
 // Validator provides block and transaction validation
 type Validator struct {

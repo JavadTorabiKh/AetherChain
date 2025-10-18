@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/javadtorabikh/Aetherchain/config"
-	"github.com/javadtorabikh/Aetherchain/blockchain"
-	"github.com/javadtorabikh/Aetherchain/network"
-	"github.com/javadtorabikh/Aetherchain/api"
+	"aetherchain/config"
+	"aetherchain/blockchain"
+	"aetherchain/network"
+	"aetherchain/api"
 )
 
 // @title AetherChain Full Node

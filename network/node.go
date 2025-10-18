@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"Aetherchain/config"
-	"Aetherchain/blockchain"
+	"aetherchain/config"
+	"aetherchain/blockchain"
 )
 
 // Node represents a network node in the AetherChain network
@@ -109,53 +109,55 @@ func (n *Node) acceptConnections() {
 
 // handleConnection processes a new connection
 func (n *Node) handleConnection(conn net.Conn) {
-	peerAddress := conn.RemoteAddr().String()
-	fmt.Printf("🔗 New connection from %s\n", peerAddress)
-	
-	peer := &Peer{
-		ID:        generatePeerID(),
-		Address:   peerAddress,
-		Conn:      conn,
-		Connected: true,
-		LastSeen:  time.Now(),
-	}
-	
-	n.addPeer(peer)
-	
-	// Handle peer communication
-	n.handlePeerCommunication(peer)
+    peerAddress := conn.RemoteAddr().String()
+    fmt.Printf("🔗 New connection from %s\n", peerAddress)
+
+    peer := &Peer{
+        ID:        generatePeerID(),
+        Address:   peerAddress,
+        Conn:      conn,
+        Connected: true,
+        LastSeen:  time.Now(),
+    }
+
+    n.addPeer(peer)
+    
+    // Handle peer communication - درست شده:
+    n.handlePeerCommunication(peer)
 }
 
 // handlePeerCommunication manages communication with a peer
 func (n *Node) handlePeerCommunication(peer *Peer) {
-	defer func() {
-		peer.Connected = false
-		if peer.Conn != nil {
-			peer.Conn.Close()
-		}
-		n.removePeer(peer.ID)
-		fmt.Printf("🔌 Disconnected from peer %s\n", peer.Address)
-	}()
-	
-	buffer := make([]byte, 4096)
-	
-	for n.isRunning && peer.Connected {
-		// Set read timeout
-		peer.Conn.SetReadDeadline(time.Now().Add(30 * time.Second))
-		
-		n, err := peer.Conn.Read(buffer)
-		if err != nil {
-			if n.isRunning {
-				fmt.Printf("Error reading from peer %s: %v\n", peer.Address, err)
-			}
-			return
-		}
-		
-		if n > 0 {
-			peer.LastSeen = time.Now()
-			n.handleMessage(peer, buffer[:n])
-		}
-	}
+    defer func() {
+        peer.Connected = false
+        if peer.Conn != nil {
+            peer.Conn.Close()
+        }
+        n.removePeer(peer.ID)
+        fmt.Printf("🔌 Disconnected from peer %s\n", peer.Address)
+    }()
+
+    buffer := make([]byte, 4096)
+    
+    for n.isRunning && peer.Connected {  // درست شده: n.isRunning
+        // Set read timeout
+        peer.Conn.SetReadDeadline(time.Now().Add(30 * time.Second))
+        
+        bytesRead, err := peer.Conn.Read(buffer)
+        if err != nil {
+            if n.isRunning {  // درست شده
+                fmt.Printf("Error reading from peer %s: %v\n", peer.Address, err)
+            }
+            return
+        }
+        
+        if bytesRead > 0 {
+            peer.LastSeen = time.Now()
+            // درست شده: استفاده از MessageHandler
+            messageHandler := NewMessageHandler(n)
+            messageHandler.HandleMessage(peer, buffer[:bytesRead])
+        }
+    }
 }
 
 // handleMessage processes incoming messages from peers
@@ -169,33 +171,33 @@ func (n *Node) handleMessage(peer *Peer, data []byte) {
 	peer.Conn.Write([]byte(response))
 }
 
+// connectToNode attempts to connect to a specific node
+func (n *Node) ConnectToNode(address string) {
+    conn, err := net.DialTimeout("tcp", address, n.config.PeerTimeout)
+    if err != nil {
+        fmt.Printf("Failed to connect to node %s: %v\n", address, err)
+        return
+    }
+    
+    fmt.Printf("🔗 Connected to node %s\n", address)
+    
+    peer := &Peer{
+        ID:        generatePeerID(),
+        Address:   address,
+        Conn:      conn,
+        Connected: true,
+        LastSeen:  time.Now(),
+    }
+    
+    n.addPeer(peer)
+    go n.handlePeerCommunication(peer)
+}
+
 // connectToBootstrapNodes connects to bootstrap nodes
 func (n *Node) connectToBootstrapNodes() {
 	for _, bootstrapNode := range n.config.BootstrapNodes {
-		go n.connectToNode(bootstrapNode)
+		go n.ConnectToNode(bootstrapNode)
 	}
-}
-
-// connectToNode attempts to connect to a specific node
-func (n *Node) connectToNode(address string) {
-	conn, err := net.DialTimeout("tcp", address, n.config.PeerTimeout)
-	if err != nil {
-		fmt.Printf("Failed to connect to bootstrap node %s: %v\n", address, err)
-		return
-	}
-	
-	fmt.Printf("🔗 Connected to bootstrap node %s\n", address)
-	
-	peer := &Peer{
-		ID:        generatePeerID(),
-		Address:   address,
-		Conn:      conn,
-		Connected: true,
-		LastSeen:  time.Now(),
-	}
-	
-	n.addPeer(peer)
-	go n.handlePeerCommunication(peer)
 }
 
 // peerMaintenance performs maintenance tasks on peers
@@ -240,10 +242,11 @@ func (n *Node) addPeer(peer *Peer) {
 
 // removePeer removes a peer from the peer list
 func (n *Node) removePeer(peerID string) {
-	n.peerMutex.Lock()
-	defer n.peerMutex.Unlock()
-	
-	delete(n.peers, peerID)
+    n.peerMutex.Lock()
+    defer n.peerMutex.Unlock()
+    
+    delete(n.peers, peerID)
+    fmt.Printf("👋 Removed peer: %s (Total: %d)\n", peerID, len(n.peers))
 }
 
 // GetPeerCount returns the number of connected peers
@@ -253,6 +256,8 @@ func (n *Node) GetPeerCount() int {
 	
 	return len(n.peers)
 }
+
+
 
 // BroadcastMessage sends a message to all connected peers
 func (n *Node) BroadcastMessage(message []byte) {

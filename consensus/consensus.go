@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"Aetherchain/blockchain"
-	"Aetherchain/network"
+	"aetherchain/blockchain"
+	"aetherchain/network"
 )
 
 // Consensus implements the consensus mechanism for AetherChain

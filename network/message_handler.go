@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"Aetherchain/blockchain"
+	"aetherchain/blockchain"
 )
 
 // MessageType represents different types of network messages
@@ -175,50 +175,52 @@ func (mh *MessageHandler) handleBlocks(peer *Peer, message NetworkMessage) {
 
 // handleNewBlock processes new block announcements
 func (mh *MessageHandler) handleNewBlock(peer *Peer, message NetworkMessage) {
-	var newBlockData NewBlockMessage
-	if err := json.Unmarshal(message.Data, &newBlockData); err != nil {
-		fmt.Printf("❌ Invalid new block data: %v\n", err)
-		return
-	}
+    var newBlockData NewBlockMessage
+    if err := json.Unmarshal(message.Data, &newBlockData); err != nil {
+        fmt.Printf("❌ Invalid new block data: %v\n", err)
+        return
+    }
 
-	block := newBlockData.Block
-	fmt.Printf("🆕 New block announced from %s: Index=%d, Hash=%s\n", 
-		peer.Address, block.Index, block.Hash[:16])
+    block := newBlockData.Block
+    fmt.Printf("🆕 New block announced from %s: Index=%d, Hash=%s\n", 
+        peer.Address, block.Index, block.Hash[:16])
 
-	// Validate and add the block
-	if mh.node.blockchain.IsValidBlock(block) {
-		mh.node.blockchain.AddBlock(block)
-		fmt.Printf("✅ Added new block %d to chain\n", block.Index)
-		
-		// Broadcast to other peers
-		mh.node.BroadcastMessage(rawData)
-	} else {
-		fmt.Printf("❌ Invalid block received from %s\n", peer.Address)
-	}
+    // Validate and add the block
+    if mh.node.blockchain.IsValidBlock(block) {
+        mh.node.blockchain.AddBlock(block)
+        fmt.Printf("✅ Added new block %d to chain\n", block.Index)
+        
+        // Broadcast to other peers - درست شده:
+        broadcastData, _ := json.Marshal(message)
+        mh.node.BroadcastMessage(broadcastData)
+    } else {
+        fmt.Printf("❌ Invalid block received from %s\n", peer.Address)
+    }
 }
 
 // handleNewTx processes new transaction announcements
 func (mh *MessageHandler) handleNewTx(peer *Peer, message NetworkMessage) {
-	var newTxData NewTxMessage
-	if err := json.Unmarshal(message.Data, &newTxData); err != nil {
-		fmt.Printf("❌ Invalid new transaction data: %v\n", err)
-		return
-	}
+    var newTxData NewTxMessage
+    if err := json.Unmarshal(message.Data, &newTxData); err != nil {
+        fmt.Printf("❌ Invalid new transaction data: %v\n", err)
+        return
+    }
 
-	tx := newTxData.Transaction
-	fmt.Printf("🆕 New transaction announced from %s: Hash=%s\n", 
-		peer.Address, tx.Hash[:16])
+    tx := newTxData.Transaction
+    fmt.Printf("🆕 New transaction announced from %s: Hash=%s\n", 
+        peer.Address, tx.Hash[:16])
 
-	// Validate and add the transaction
-	if tx.IsValid() {
-		mh.node.blockchain.AddTransaction(tx)
-		fmt.Printf("✅ Added transaction to pool: %s\n", tx.Hash[:16])
-		
-		// Broadcast to other peers
-		mh.node.BroadcastMessage(rawData)
-	} else {
-		fmt.Printf("❌ Invalid transaction received from %s\n", peer.Address)
-	}
+    // Validate and add the transaction
+    if tx.IsValid() {
+        mh.node.blockchain.AddTransaction(tx)
+        fmt.Printf("✅ Added transaction to pool: %s\n", tx.Hash[:16])
+        
+        // Broadcast to other peers - درست شده:
+        broadcastData, _ := json.Marshal(message)
+        mh.node.BroadcastMessage(broadcastData)
+    } else {
+        fmt.Printf("❌ Invalid transaction received from %s\n", peer.Address)
+    }
 }
 
 // handleGetPeers processes peer list requests
@@ -245,7 +247,7 @@ func (mh *MessageHandler) handlePeers(peer *Peer, message NetworkMessage) {
 	// Connect to new peers
 	for _, peerAddr := range peersData.Peers {
 		if !mh.node.HasPeer(peerAddr) && peerAddr != mh.node.config.Host {
-			go mh.node.connectToNode(peerAddr)
+			go mh.node.ConnectToNode(peerAddr)
 		}
 	}
 }
