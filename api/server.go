@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"your-username/aetherchain/config"
-	"your-username/aetherchain/blockchain"
-	"your-username/aetherchain/network"
+	"javadtorabikh/aetherchain/config"
+	"javadtorabikh/aetherchain/blockchain"
+	"javadtorabikh/aetherchain/network"
 
 	"github.com/gin-gonic/gin"
 )
