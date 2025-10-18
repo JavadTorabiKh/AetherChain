@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"javadtorabikh/Aetherchain/blockchain"
-	"javadtorabikh/Aetherchain/config"
-	"javadtorabikh/Aetherchain/network"
+	"Aetherchain/blockchain"
+	"Aetherchain/config"
+	"Aetherchain/network"
 
 	"github.com/gin-gonic/gin"
 )

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"javadtorabikh/Aetherchain/blockchain"
+	"Aetherchain/blockchain"
 )
 
 // Database handles persistent storage for the blockchain

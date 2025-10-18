@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"javadtorabikh/Aetherchain/blockchain"
+	"Aetherchain/blockchain"
 )
 
 // MessageType represents different types of network messages

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"javadtorabikh/Aetherchain/blockchain"
+	"Aetherchain/blockchain"
 )
 
 // StateManager manages the state of the blockchain

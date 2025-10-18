@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"javadtorabikh/Aetherchain/blockchain"
-	"javadtorabikh/Aetherchain/network"
+	"Aetherchain/blockchain"
+	"Aetherchain/network"
 )
 
 // Consensus implements the consensus mechanism for AetherChain

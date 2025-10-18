@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"javadtorabikh/Aetherchain/config"
-	"javadtorabikh/Aetherchain/blockchain"
+	"Aetherchain/config"
+	"Aetherchain/blockchain"
 )
 
 // Node represents a network node in the AetherChain network

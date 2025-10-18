@@ -1,6 +1,6 @@
 package consensus
 
-import "javadtorabikh/Aetherchain/blockchain"
+import "Aetherchain/blockchain"
 
 // Validator provides block and transaction validation
 type Validator struct {
